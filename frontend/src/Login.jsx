@@ -1,5 +1,15 @@
 import { useState } from "react";
 import "./Login.css";
+import { validateLogin } from "./loginValidation";
+
+const handleLogin = (e) => {
+
+    e.preventDefault();
+
+    const result = validateLogin(username, password);
+
+    setError(result);
+};
 
 function Login() {
     const [username, setUsername] = useState("");
