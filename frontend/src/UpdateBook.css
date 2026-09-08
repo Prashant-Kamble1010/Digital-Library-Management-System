@@ -1,0 +1,35 @@
+.update-container {
+    width: 400px;
+    margin: 80px auto;
+    padding: 30px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+}
+
+.update-container h2 {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.update-container div {
+    margin-bottom: 15px;
+}
+
+.update-container label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.update-container input,
+.update-container select {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.update-container button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    cursor: pointer;
+}
