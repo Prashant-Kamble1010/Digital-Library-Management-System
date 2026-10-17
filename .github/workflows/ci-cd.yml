@@ -1,3 +1,4 @@
+
 name: Digital Library CI-CD Pipeline
 
 on:
@@ -26,121 +27,91 @@ jobs:
         working-directory: frontend
 
     steps:
-      - name: 📥 Checkout Repository (GitHub Trigger)
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: ⚙️ Setup Node.js Runtime
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
-      - name: 📦 Install Dependencies
+      - name: Install Dependencies
         run: npm ci
 
-      # ========================================================
-      # STAGE 1: BUILD (GitHub -> Build)
-      # ========================================================
-      - name: 🏗️ Stage 1: Build - Vite Production Compilation
+      # Stage 1: Build
+      - name: Build Production Application
         run: npm run build
 
-      # ========================================================
-      # STAGE 2: AUTOMATED TESTING (Build -> Automated Testing)
-      # ========================================================
-      - name: 🧪 Stage 2: Automated Testing - Vitest Unit Tests
+      # Stage 2: Automated Testing
+      - name: Run Automated Tests
         run: npm run test:run
 
-      - name: 📊 Stage 2: Automated Testing - Generate V8 Coverage
+      - name: Generate Test Coverage
         run: npm run test:coverage
 
-      # ========================================================
-      # STAGE 3: CODE QUALITY CHECK (Testing -> Code Quality)
-      # ========================================================
-      - name: 🔍 Stage 3: Code Quality Check - ESLint Static Analysis
+      # Stage 3: Code Quality
+      - name: Run ESLint
         run: npm run lint
 
-      - name: 🛡️ Stage 3: Code Quality Check - Security Audit
-        run: npm audit --audit-level=high || true
+      - name: Security Audit
+        run: npm audit --audit-level=high
 
-      # ========================================================
-      # STAGE 4: DEPLOYMENT (Quality Check -> Deployment)
-      # ========================================================
-      - name: 🚀 Stage 4: Deployment - Stage & Package Production Release
-        run: |
-          echo "Packaging Digital Library Management System for deployment..."
-          test -d dist && echo "Production build verified in dist/ directory."
-          echo "Deployment target: Production Web Host (GitHub Pages / Cloud)"
-          echo "Application status: DEPLOYED AND LIVE"
-
-      - name: 🌐 Stage 4: Deployment - Deploy to GitHub Pages
-        if: (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main') && github.event_name == 'push'
-        uses: peaceiris/actions-gh-pages@v4
-        continue-on-error: true
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: frontend/dist
-          force_orphan: true
-
-      # ========================================================
-      # STAGE 5: REPORTING & METRICS GENERATION
-      # ========================================================
-      - name: 📋 Stage 5: Reporting - Generate CI/CD Execution Summary
-        if: always()
-        run: |
-          mkdir -p reports
-          REPORT_FILE="reports/ci-cd-report.md"
-
-          echo "# 📊 Digital Library Management System — CI/CD Pipeline Report" > $REPORT_FILE
-          echo "" >> $REPORT_FILE
-          echo "### 🎓 Academic Submission: Formative Assessment 2 (FA2) — Agile Software Development" >> $REPORT_FILE
-          echo "**Workflow Sequence:** \`GitHub → Build → Automated Testing → Code Quality Check → Deployment\`" >> $REPORT_FILE
-          echo "**Repository:** \`Prashant-Kamble1010/Digital-Library-Management-System\`" >> $REPORT_FILE
-          echo "**Branch:** \`${{ github.ref_name }}\` | **Commit SHA:** \`${{ github.sha }}\`" >> $REPORT_FILE
-          echo "**Trigger Event:** \`${{ github.event_name }}\` by @${{ github.actor }}" >> $REPORT_FILE
-          echo "**Timestamp:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $REPORT_FILE
-          echo "" >> $REPORT_FILE
-          echo "---" >> $REPORT_FILE
-          echo "## 🚀 CI/CD Pipeline Workflow Execution" >> $REPORT_FILE
-          echo "" >> $REPORT_FILE
-          echo "| Stage | Step / Objective | Tool | Result |" >> $REPORT_FILE
-          echo "| :--- | :--- | :--- | :---: |" >> $REPORT_FILE
-          echo "| 🐙 **GitHub** | Automatic Push / PR Trigger | GitHub Actions Webhook | ✅ Triggered |" >> $REPORT_FILE
-          echo "| 🏗️ **Build** | Compile & bundle React + Vite assets | Vite 6 | ✅ Passed |" >> $REPORT_FILE
-          echo "| 🧪 **Automated Testing** | Business validation unit tests | Vitest + V8 | ✅ 8/8 Passed (100%) |" >> $REPORT_FILE
-          echo "| 🔍 **Code Quality Check**| Static analysis & Security check | ESLint + npm audit | ✅ 0 Errors / Clean |" >> $REPORT_FILE
-          echo "| 🚀 **Deployment** | Deploy production bundle to hosting | GitHub Pages / Artifacts | ✅ Deployed |" >> $REPORT_FILE
-          echo "" >> $REPORT_FILE
-          echo "---" >> $REPORT_FILE
-          echo "## 📈 Quality Metrics & Test Results" >> $REPORT_FILE
-          echo "" >> $REPORT_FILE
-          echo "| Metric | Value | Target Standard | Status |" >> $REPORT_FILE
-          echo "| :--- | :---: | :---: | :---: |" >> $REPORT_FILE
-          echo "| **Test Suites** | 2 / 2 passed | 100% | ✅ Passed |" >> $REPORT_FILE
-          echo "| **Unit Tests** | 8 / 8 passed | 100% | ✅ Passed |" >> $REPORT_FILE
-          echo "| **ESLint Errors** | 0 errors | 0 | ✅ Clean |" >> $REPORT_FILE
-          echo "| **ESLint Warnings** | 0 warnings | 0 | ✅ Clean |" >> $REPORT_FILE
-          echo "| **Code Coverage** | 100% (Statements, Branches, Lines) | ≥ 80% | ✅ Exceeded |" >> $REPORT_FILE
-          echo "| **Build Output** | \`frontend/dist/\` generated | Valid HTML/JS/CSS | ✅ Ready |" >> $REPORT_FILE
-          echo "" >> $REPORT_FILE
-          echo "---" >> $REPORT_FILE
-          echo "## 📦 Published Artifacts" >> $REPORT_FILE
-          echo "1. **\`digital-library-build\`**: Production-ready bundle from \`frontend/dist/\`" >> $REPORT_FILE
-          echo "2. **\`digital-library-coverage\`**: Interactive HTML and LCOV coverage reports" >> $REPORT_FILE
-          echo "3. **\`digital-library-ci-report\`**: Full pipeline execution logs and report" >> $REPORT_FILE
-
-          # Write report to GitHub Step Summary
-          cat $REPORT_FILE >> $GITHUB_STEP_SUMMARY
-
-      - name: 📤 Upload Build Artifact
-        if: success()
+      # Prepare build artifact for deployment
+      - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: digital-library-build
           path: frontend/dist/
           if-no-files-found: error
 
-      - name: 📤 Upload Coverage Report Artifact
+      # Stage 4: Deployment
+      - name: Deploy to GitHub Pages
+        if: >-
+          github.event_name == 'push' &&
+          (github.ref == 'refs/heads/main' ||
+           github.ref == 'refs/heads/master')
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: frontend/dist
+          force_orphan: true
+
+      # Stage 5: Reporting
+      - name: Generate Pipeline Summary
+        if: always()
+        working-directory: .
+        env:
+          BRANCH_NAME: ${{ github.ref_name }}
+          COMMIT_SHA: ${{ github.sha }}
+          EVENT_NAME: ${{ github.event_name }}
+          ACTOR: ${{ github.actor }}
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          mkdir -p reports
+
+          {
+            echo "# Digital Library CI/CD Pipeline Report"
+            echo ""
+            echo "## Execution Details"
+            echo "- Repository: $GITHUB_REPOSITORY"
+            echo "- Branch: $BRANCH_NAME"
+            echo "- Commit: $COMMIT_SHA"
+            echo "- Event: $EVENT_NAME"
+            echo "- Triggered by: $ACTOR"
+            echo "- Job status: $JOB_STATUS"
+            echo "- Date (UTC): $(date -u '+%Y-%m-%d %H:%M:%S')"
+            echo ""
+            echo "## Pipeline Workflow"
+            echo "GitHub -> Build -> Automated Testing -> Code Quality -> Deployment"
+            echo ""
+            echo "Check the Actions step results above for the actual status of each stage."
+          } > reports/ci-cd-report.md
+
+          cat reports/ci-cd-report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload Coverage Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -148,10 +119,10 @@ jobs:
           path: frontend/coverage/
           if-no-files-found: ignore
 
-      - name: 📤 Upload CI/CD Pipeline Summary Report
+      - name: Upload CI/CD Summary Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: digital-library-ci-report
-          path: frontend/reports/
+          path: reports/ci-cd-report.md
           if-no-files-found: ignore
