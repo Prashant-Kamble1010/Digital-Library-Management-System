@@ -6,9 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "preview": "vite preview",
     "test": "vitest",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint ."
   },
   "dependencies": {
     "react": "^19.2.8",
