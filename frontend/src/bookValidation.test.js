@@ -33,4 +33,14 @@ describe("Book Validation", () => {
         ).toBe("Author is required");
     });
 
+    test("empty category", () => {
+        expect(
+            validateBook(
+                "Java Programming",
+                "James Gosling",
+                ""
+            )
+        ).toBe("Category is required");
+    });
+
 });

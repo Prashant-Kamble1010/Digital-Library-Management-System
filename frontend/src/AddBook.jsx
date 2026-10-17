@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./AddBook.css";
+import { validateBook } from "./bookValidation";
 
 function AddBook() {
     const [title, setTitle] = useState("");
@@ -10,8 +11,9 @@ function AddBook() {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        if (!title || !author || !category) {
-            setMessage("Please fill all fields");
+        const result = validateBook(title, author, category);
+        if (result !== "Book is valid") {
+            setMessage(result);
             return;
         }
 
@@ -32,8 +34,9 @@ function AddBook() {
 
                 {/* Book Title */}
                 <div>
-                    <label>Book Title</label>
+                    <label htmlFor="book-title">Book Title</label>
                     <input
+                        id="book-title"
                         type="text"
                         placeholder="Enter book title"
                         value={title}
@@ -43,8 +46,9 @@ function AddBook() {
 
                 {/* Author */}
                 <div>
-                    <label>Author</label>
+                    <label htmlFor="book-author">Author</label>
                     <input
+                        id="book-author"
                         type="text"
                         placeholder="Enter author name"
                         value={author}
@@ -54,8 +58,9 @@ function AddBook() {
 
                 {/* Category */}
                 <div>
-                    <label>Category</label>
+                    <label htmlFor="book-category">Category</label>
                     <select
+                        id="book-category"
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
                     >
@@ -68,7 +73,7 @@ function AddBook() {
                 </div>
 
                 {/* Message */}
-                {message && <p>{message}</p>}
+                {message && <p role="status">{message}</p>}
 
                 {/* Save Button */}
                 <button type="submit">

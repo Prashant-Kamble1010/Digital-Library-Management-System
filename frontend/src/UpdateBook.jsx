@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./UpdateBook.css";
+import { validateBook } from "./bookValidation";
 
 function UpdateBook() {
     const [title, setTitle] = useState("Java Programming");
@@ -10,8 +11,9 @@ function UpdateBook() {
     const handleUpdate = (e) => {
         e.preventDefault();
 
-        if (!title || !author || !category) {
-            setMessage("Please fill all fields");
+        const result = validateBook(title, author, category);
+        if (result !== "Book is valid") {
+            setMessage(result);
             return;
         }
 
@@ -27,8 +29,9 @@ function UpdateBook() {
 
                 {/* Book Title */}
                 <div>
-                    <label>Book Title</label>
+                    <label htmlFor="update-title">Book Title</label>
                     <input
+                        id="update-title"
                         type="text"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
@@ -37,8 +40,9 @@ function UpdateBook() {
 
                 {/* Author */}
                 <div>
-                    <label>Author</label>
+                    <label htmlFor="update-author">Author</label>
                     <input
+                        id="update-author"
                         type="text"
                         value={author}
                         onChange={(e) => setAuthor(e.target.value)}
@@ -47,8 +51,9 @@ function UpdateBook() {
 
                 {/* Category */}
                 <div>
-                    <label>Category</label>
+                    <label htmlFor="update-category">Category</label>
                     <select
+                        id="update-category"
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
                     >
@@ -66,7 +71,7 @@ function UpdateBook() {
                 </button>
 
                 {/* Success / Error Message */}
-                {message && <p>{message}</p>}
+                {message && <p role="status">{message}</p>}
 
             </form>
 

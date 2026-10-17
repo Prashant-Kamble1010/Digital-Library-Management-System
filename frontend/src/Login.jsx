@@ -2,36 +2,24 @@ import { useState } from "react";
 import "./Login.css";
 import { validateLogin } from "./loginValidation";
 
-const handleLogin = (e) => {
-
-    e.preventDefault();
-
-    const result = validateLogin(username, password);
-
-    setError(result);
-};
-
 function Login() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const [message, setMessage] = useState("");
 
-    const handleLogin = (e) => {
-        e.preventDefault();
+    const handleLogin = (event) => {
+        event.preventDefault();
 
-        // Basic validation
-        if (username === "" || password === "") {
-            setError("Username and Password are required");
-            return;
+        const result = validateLogin(username, password);
+
+        if (result === "Login successful") {
+            setError("");
+            setMessage(result);
+        } else {
+            setMessage("");
+            setError(result);
         }
-
-        if (password.length < 6) {
-            setError("Password must be at least 6 characters");
-            return;
-        }
-
-        setError("");
-        alert("Login Successful!");
     };
 
     return (
@@ -39,37 +27,32 @@ function Login() {
             <h2>Digital Library Login</h2>
 
             <form onSubmit={handleLogin}>
-
-                {/* Username */}
                 <div>
-                    <label>Username</label>
+                    <label htmlFor="username">Username</label>
                     <input
+                        id="username"
                         type="text"
                         placeholder="Enter username"
                         value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        onChange={(event) => setUsername(event.target.value)}
                     />
                 </div>
 
-                {/* Password */}
                 <div>
-                    <label>Password</label>
+                    <label htmlFor="password">Password</label>
                     <input
+                        id="password"
                         type="password"
                         placeholder="Enter password"
                         value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={(event) => setPassword(event.target.value)}
                     />
                 </div>
 
-                {/* Error Message */}
-                {error && <p>{error}</p>}
+                {error && <p role="alert" style={{ color: "red" }}>{error}</p>}
+                {message && <p role="status" style={{ color: "green" }}>{message}</p>}
 
-                {/* Login Button */}
-                <button type="submit">
-                    Login
-                </button>
-
+                <button type="submit">Login</button>
             </form>
         </div>
     );

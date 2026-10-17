@@ -21,4 +21,10 @@ describe("Login Validation", () => {
         ).toBe("Password must be at least 6 characters");
     });
 
+    test("password with exactly 6 characters is valid", () => {
+        expect(
+            validateLogin("librarian", "abcdef")
+        ).toBe("Login successful");
+    });
+
 });
